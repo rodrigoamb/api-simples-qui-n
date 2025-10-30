@@ -59,6 +59,21 @@ app.get("/clientes", async (req, res) => {
   }
 });
 
+//GET POR ID - TRAZER UM CLIENTE ESPECÍFICO
+app.get("/clientes/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    res.json({ message: "O id é obrigatório" });
+  }
+
+  const result = await database.query("SELECT * FROM clientes WHERE id=$1", [
+    id,
+  ]);
+
+  res.json({ message: "Busca realizada com sucesso", data: result.rows[0] });
+});
+
 // rota POST
 app.post("/clientes", async (req, res) => {
   const { nome, email, telefone } = req.body;
@@ -98,6 +113,19 @@ app.put("/clientes/:id", async (req, res) => {
   );
 
   res.status(200).json({ message: "Cliente atualizado com sucesso" });
+});
+
+//DELETE - criando a rota para deletar o cliente
+app.delete("/clientes/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    res.json({ message: "O id é obrigatório" });
+  }
+
+  await database.query("DELETE FROM clientes WHERE id=$1", [id]);
+
+  res.json({ message: "Cliente deletado com sucesso" });
 });
 
 // iniciando o servidor
